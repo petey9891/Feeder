@@ -1,0 +1,25 @@
+{
+  "name": "feeder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "petey9891",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.3.2",
+    "nodemon": "^1.17.4"
+  },
+  "nodemonConfig": {
+      "ignore": [
+        "node_modules/**/node_modules"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "delay": 2000
+    }
+}
