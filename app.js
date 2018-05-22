@@ -6,14 +6,14 @@ const client = new Discord.Client();
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
-
-
-  const message = "!ocia feeds"
-  const worker = Worker(message);
-  worker.getFeed( (err, res) => {
-    if (err) console.log(err);
-    // console.log(res);
-  });
+  //
+  //
+  // const message = "!Pulsefire11 feeds"
+  // const worker = Worker(message);
+  // worker.getFeed( (err, res) => {
+  //   if (err) console.log(err);
+  //   console.log(res);
+  // });
 
 });
 
@@ -25,7 +25,10 @@ client.on('message', msg => {
     const worker = Worker(msg);
     worker.getFeed( (err, res) => {
       if (err) console.log(err);
-      // console.log(res);
+      msg.channel.send(`Yep! He does! Over the last 10 games, he's fed in the last ${res.numGames}. `
+          + `The worst game was: ${res.worstGame.kills}/${res.worstGame.deaths}/${res.worstGame.assists}`
+          + ` with a ${Math.round(res.worstGame.kda * 100)/100} kda and ${res.worstGame.totalDamage} total damage. Yikes! no flame`
+      );
     });
 
   }
