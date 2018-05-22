@@ -38,7 +38,6 @@ const worker = (msg) => {
   */
   const _getMatchList = (accountId, callback) => {
     const matchListUrl = _build_api_url('match/v3/matchlists/by-account/', accountId, 'endIndex=10');
-    // const matchListUrl = _build_api_url('match/v3/matchlists/by-account/', accountId, 'endIndex=1');
     request({ url: matchListUrl, json: true }, (err, res, body) => {
         if (err) { return callback(err, {'statusCode': res.statusCode} ); }
         return callback(null, body);
@@ -52,17 +51,14 @@ const worker = (msg) => {
   const _getMatches = (name, matchList, callback) => {
     const games = [];
     matchList.forEach( x => games.push(x.gameId) );
-    let count = 1;
-    let feeds = [];
-    games.forEach( gameId => {
-      _getMatch(_build_api_url('match/v3/matches/', gameId, null), name)
-      .then( (val) => {
-        if (val !== -1)
-          feeds.push(val);
-        count += 1;
-        if (count == games.length-1) { return callback(null, feeds); }
-      }).catch( err =>  console.log(err) );
-    });
+
+    let promises = [];
+    for (const i in games) {
+      promises.push(_getMatch(
+        _build_api_url('match/v3/matches/', games[i], null), name));
+    }
+    Promise.all(promises).then( val => { return callback(null, val); })
+        .catch( err => { return callback(err, null) } );
   }
 
   const _getMatch = (url, name) => {
@@ -74,7 +70,7 @@ const worker = (msg) => {
         const players = body.participants.filter( x => x.participantId === participantID );
         const stats = players[0].stats
         const kda = (stats.kills + stats.assists)/stats.deaths;
-        if (kda < 1.25) {
+        if (kda < 1) {
           resolve({'kda': kda, 'kills': stats.kills, 'deaths':stats.deaths,
                    'assists':stats.assists, 'totalDamage': stats.totalDamageDealtToChampions });
         } else {
@@ -87,21 +83,18 @@ const worker = (msg) => {
   const getFeed = (callback) => {
     const summoner = msg.content.toLowerCase().replace('!', '').split(' ')[0];
     // const summoner = msg.toLowerCase().replace('!', '').split(' ')[0];
-
-    let worstGame = undefined;
-    let count = 0;
     _getAccId( (acc_err, acc_res) => {
       if (acc_err) { return callback(acc_err, null); }
       _getMatchList(acc_res, (matchList_err, matchList_res) => {
         if (matchList_err) { return callback(matchList_err, null); }
         _getMatches(summoner, matchList_res.matches, (match_err, match_res) => {
           if(match_err) { console.log("error"); return callback(matchList_err, null); }
-          const tmp = match_res;
-          tmp.forEach( x => {
-            count += 1;
+          const feeds = match_res.filter( x => (x !== -1));
+          let worstGame = undefined;
+          feeds.forEach( x => {
             if (worstGame === undefined || x.kda < worstGame.kda) { worstGame = x; }
           });
-          return callback(null, { 'numGames': count, 'worstGame': worstGame });
+          return callback(null, { 'numGames': feeds.length, 'worstGame': worstGame });
         });
       });
     });
