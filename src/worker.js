@@ -21,7 +21,8 @@ const worker = (msg) => {
     @private
   */
   const _getAccId = (callback) => {
-    const summonerUrl = _build_api_url('summoner/v3/summoners/by-name/', msg.content.replace('!', '').split(' ')[0], null);
+    const summonerUrl = _build_api_url('summoner/v3/summoners/by-name/',
+          msg.content.replace('!', '').split(' ')[0], null);
     // const summonerUrl = _build_api_url('summoner/v3/summoners/by-name/', msg.replace('!', '').split(' ')[0], null);
     request({ url: summonerUrl, json: true }, (err, res, body) => {
         if (err) { return callback(err, { statusCode: res.statusCode }); }
@@ -59,7 +60,8 @@ const worker = (msg) => {
       request({ url, json: true }, (err, res, body) => {
         if (err) return reject(err);
         let participantID;
-        body.participantIdentities.forEach((p) => { if (p.player.summonerName.toLowerCase() === name) participantID = p.participantId; });
+        body.participantIdentities.forEach((p) => {
+          if (p.player.summonerName.toLowerCase() === name) participantID = p.participantId; });
         const players = body.participants.filter(x => x.participantId === participantID);
         const stats = players[0].stats;
         const kda = (stats.kills + stats.assists) / stats.deaths;
