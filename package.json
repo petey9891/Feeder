@@ -11,15 +11,16 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.3.2",
-    "nodemon": "^1.17.4"
+    "nodemon": "^1.17.4",
+    "request": "2.87.0"
   },
   "nodemonConfig": {
-      "ignore": [
-        "node_modules/**/node_modules"
-      ],
-      "env": {
-        "NODE_ENV": "development"
-      },
-      "delay": 2000
-    }
+    "ignore": [
+      "node_modules/**/node_modules"
+    ],
+    "env": {
+      "NODE_ENV": "development"
+    },
+    "delay": 2000
+  }
 }
