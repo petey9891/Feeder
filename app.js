@@ -35,30 +35,3 @@ client.on('message', (msg) => {
 });
 
 client.login(resources.discord_token);
-
-// detect roles
-// if(!message.member.roles.find("name", "Big Boi") && !message.member.roles
-// .find("name", "Supreme Big Boi")){
-//     message.reply("");
-//     return;
-// }\
-
-// message.guild.members.find(val => val.user.username === 'USERNAME')
-//   msg.delete().then(msg => console.log(`Deleted message from ${msg.author.username}`))
-// .catch(console.error);
-// msg.channel.send('+tts Robbie bice nind', {tts:true}).then(message => message.delete(1));
-
-// message.member.voiceChannel.join().then(connection => connection
-// .playArbitraryInput(ytdl(splitMessage[1], {
-//             filter: 'audioonly'
-//         })).then(dispatcher => {
-//         dispatcher.on('error', message.send("There was an error playing your file"))
-//     }));
-
-
-// leagueAPI.getMatch(response['matches'][match]['gameId']).then(response => {
-// leagueAPI.getMatchlist(accountId, {
-//     query: {
-//         endIndex: 20
-//     }
-// }).then(response => {
