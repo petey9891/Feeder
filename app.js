@@ -2,14 +2,21 @@ const resources = require('./src/resources.js');
 const Worker = require('./src/worker.js');
 const Discord = require('discord.js');
 
+// Initializing bot
 const client = new Discord.Client();
 
-
+// Bot initialized
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
+// After a message, runs the following scripts
 client.on('message', (msg) => {
+
+  /**
+    Generates statistics for worst league game within last 10 games
+    @example !<name> feeds
+  */
   const regex = /^([!])([A-Za-z0-9])\w+\s([FEDSfeds])\w+/gm;
   if (regex.test(msg.content)) {
     console.log(`Query -- ${msg.content}`);
@@ -25,6 +32,7 @@ client.on('message', (msg) => {
     });
   }
 
+  // Fun thing for my friends -- can discard
   if (msg.author.username === 'Robbie' || msg.author.username === 'Sajirodman11') {
     const ranNum = Math.floor(Math.random() * (50 - 1)) + 1;
     console.log(`Random guess -- ${ranNum}`);
@@ -34,4 +42,5 @@ client.on('message', (msg) => {
   }
 });
 
+// Logging in bot
 client.login(resources.discord_token);

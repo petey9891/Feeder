@@ -1,8 +1,13 @@
 const request = require('request');
 const resources = require('./resources.js');
 
+/**
+  The main hub for interacting with the League API
+*/
 const worker = (msg) => {
   /**
+    Contains base information for League of Legends API call
+    @readonly
     @private
   */
   const _urlInfo = {
@@ -11,6 +16,11 @@ const worker = (msg) => {
   };
 
   /**
+    Generates a link that can be used for any league API call
+    @param {string} type Type of API call that is going to be made.
+    @param {string || number} id Identifier to get player or game
+    @param {string} query Filter to be applied
+    @returns {string} API URL
     @private
   */
   const _build_api_url = (type, id, query) => `${_urlInfo.base_link}${type}${id}?`
@@ -18,6 +28,7 @@ const worker = (msg) => {
 
   /**
     Returns account ID of user provided
+    @return {object} Account ID, otherwise err and HTTP statusCode
     @private
   */
   const _getAccId = (callback) => {
@@ -31,6 +42,9 @@ const worker = (msg) => {
   };
 
   /**
+    Returns list of most recent matches depending on Query
+    @param {number} accountId Players accountId
+    @return {object} List of most recent matches, otherwise err and HTTP statusCode
     @private
   */
   const _getMatchList = (accountId, callback) => {
@@ -42,6 +56,10 @@ const worker = (msg) => {
   };
 
   /**
+    Iterates through match list and grabs data for each match
+    @param {string} name Player's name from original message
+    @param {object[]} matchList Array of match lists
+    @return {object} Games with lower KDA than 1, otherwise err
     @private
   */
   const _getMatches = (name, matchList, callback) => {
@@ -56,6 +74,13 @@ const worker = (msg) => {
         .catch(err => callback(err, null));
   };
 
+  /**
+    Calls match API and calculates player data
+    @param {string} url API URl
+    @param {string} name Player's name from original message
+    @return {promise<object>} A JSON object of game stats, -1 otherwise
+    @private
+  */
   const _getMatch = (url, name) => new Promise((resolve, reject) => {
       request({ url, json: true }, (err, res, body) => {
         if (err) return reject(err);
@@ -74,6 +99,12 @@ const worker = (msg) => {
       });
     });
 
+  /**
+    Generates worst game statistics
+    @callback
+    @return {object} Returns worst game, otherwise err and HTTP statusCode
+    @public
+  */
   const getFeed = (callback) => {
     const summoner = msg.content.toLowerCase().replace('!', '').split(' ')[0];
     // const summoner = msg.toLowerCase().replace('!', '').split(' ')[0];
