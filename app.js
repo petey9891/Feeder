@@ -1,9 +1,6 @@
 const resources = require('./src/resources.js');
-const Worker = require('./src/worker.js');
-const Discord = require('discord.js');
-
 const Feeder = require('./src/feeder.js');
-
+const Discord = require('discord.js');
 
 // Initializing bot
 const client = new Discord.Client();

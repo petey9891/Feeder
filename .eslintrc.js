@@ -7,6 +7,7 @@ module.exports = {
       "no-underscore-dangle": 0,
       "camelcase": 0,
       "linebreak-style":0,
-      "no-console":0
+      "no-console":0,
+      "consistent-return":0
     }
 };

@@ -42,42 +42,11 @@ const feeder = (msg) => {
     @return {Promise<Object[]} List of most recent matches, otherwise err
     @private
   */
-  const _getMatchList = accountId => new Promise((resolve, reject) => {
+  const _getMatchList = (accountId) => new Promise((resolve, reject) => {
     const matchListUrl = _build_api_url('match/v3/matchlists/by-account/', accountId, 'endIndex=10');
     request({ url: matchListUrl, json: true }, (err, res, body) => {
       if (err) reject(err);
       resolve(body);
-    });
-  });
-
-  /**
-    Calls match API and calculates player data
-    @param {string} url API URl
-    @param {string} name Player's name from original message
-    @return {Promise<object>} A JSON object of game stats, -1 otherwise
-    @private
-  */
-  const _getMatch = (url, name) => new Promise((resolve, reject) => {
-    request({ url, json: true }, (err, res, body) => {
-      if (err) return reject(err);
-      let participantID;
-      body.participantIdentities.forEach((p) => {
-        if (p.player.summonerName.toLowerCase() === name) participantID = p.participantId;
-      });
-      const players = body.participants.filter(x => x.participantId === participantID);
-      const stats = players[0].stats;
-      const kda = (stats.kills + stats.assists) / stats.deaths;
-      if (kda < 1) {
-        resolve({
-          kda,
-          kills: stats.kills,
-          deaths: stats.deaths,
-          assists: stats.assists,
-          totalDamage: stats.totalDamageDealtToChampions
-        });
-      } else {
-        resolve(-1);
-      }
     });
   });
 
@@ -96,8 +65,35 @@ const feeder = (msg) => {
       reject({ message: 'Most likely just a wrong summoner name', error: err });
     }
     const promises = [];
-    games.forEach(x => promises.push(_getMatch(_build_api_url('match/v3/matches/', x, null), name)));
+    for (const i in games) {
+      promises.push(_getMatch(_build_api_url('match/v3/matches/', games[i], null), name));
+    }
     Promise.all(promises).then(val => resolve(val)).catch(err => reject(err));
+  });
+
+  /**
+    Calls match API and calculates player data
+    @param {string} url API URl
+    @param {string} name Player's name from original message
+    @return {Promise<object>} A JSON object of game stats, -1 otherwise
+    @private
+  */
+  const _getMatch = (url, name) => new Promise((resolve, reject) => {
+    request({ url, json: true }, (err, res, body) => {
+      if (err) return reject(err);
+      let participantID;
+      body.participantIdentities.forEach((p) => {
+        if (p.player.summonerName.toLowerCase() === name) participantID = p.participantId; });
+      const players = body.participants.filter(x => x.participantId === participantID);
+      const stats = players[0].stats;
+      const kda = (stats.kills + stats.assists) / stats.deaths;
+      if (kda < 1) {
+        resolve({ kda, kills: stats.kills, deaths: stats.deaths,
+                 assists: stats.assists,totalDamage: stats.totalDamageDealtToChampions });
+      } else {
+        resolve(-1);
+      }
+    });
   });
 
   /**
@@ -113,7 +109,7 @@ const feeder = (msg) => {
       if (worstGame === undefined || x.kda < worstGame.kda) { worstGame = x; }
     });
     return { numGames: feeds.length, worstGame };
-  };
+  }
 
   /**
     Generates worst game statistics
@@ -128,7 +124,7 @@ const feeder = (msg) => {
     .then(matchList => _getMatches(matchList.matches, name))
     .then(badGames => callback(null, _feeds(badGames)))
     .catch(err => callback({ error: err, message: 'That summoner name does not exist' }, null));
-  };
+  }
 
   return {
     getFeed
