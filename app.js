@@ -2,6 +2,9 @@ const resources = require('./src/resources.js');
 const Worker = require('./src/worker.js');
 const Discord = require('discord.js');
 
+const Feeder = require('./src/feeder.js');
+
+
 // Initializing bot
 const client = new Discord.Client();
 
@@ -10,6 +13,8 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
+// Regex for seeing if message is a command.
+// To add new commands, add regex under cmd key
 const regex = {
   header: /^([!])/gm,
   cmd: {
@@ -29,14 +34,18 @@ client.on('message', (msg) => {
     console.log(`Query -- ${msg.content}`);
 
     const name = msg.content.replace(regex.header, '').replace(regex.cmd.feeds, '').trim();
-    const worker = Worker(name);
-    worker.getFeed((err, res) => {
-      if (err) console.log(err);
-      const message = `Yep! He does! Over the last 10 games, he's fed in the last ${res.numGames}. `
-          + `In one of those games, he went: ${res.worstGame.kills}/${res.worstGame.deaths}/${res.worstGame.assists}`
-          + ` with a ${Math.round(res.worstGame.kda * 100) / 100} kda and ${res.worstGame.totalDamage} total damage. Yikes! no flame`;
-      msg.channel.send(message);
-      console.log(message);
+    const feeder = Feeder(name);
+    feeder.getFeed((err, res) => {
+      if (err) { console.error(err.error); msg.channel.send(err.message)}
+      else {
+        const message = `Yep! He does! Over the last 10 games, he's fed in the last ${res.numGames}.`
+            + ' In one of those games, he went:'
+            + ` ${res.worstGame.kills}/${res.worstGame.deaths}/${res.worstGame.assists}`
+            + ` with a ${Math.round(res.worstGame.kda * 100) / 100} kda and`
+            + ` ${res.worstGame.totalDamage} total damage. Yikes! no flame`;
+        msg.channel.send(message);
+        console.log(message);
+      }
     });
   }
 
