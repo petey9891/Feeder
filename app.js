@@ -10,6 +10,13 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
+const regex = {
+  header: /^([!])/gm,
+  cmd: {
+    feeds: /([FEDSfeds])\w+$/gm
+  }
+}
+
 // After a message, runs the following scripts
 client.on('message', (msg) => {
 
@@ -17,11 +24,12 @@ client.on('message', (msg) => {
     Generates statistics for worst league game within last 10 games
     @example !<name> feeds
   */
-  const regex = /^([!])([A-Za-z0-9])\w+\s([FEDSfeds])\w+/gm;
-  if (regex.test(msg.content)) {
+
+  if (regex.header.test(msg.content) && regex.cmd.feeds.test(msg.content)) {
     console.log(`Query -- ${msg.content}`);
 
-    const worker = Worker(msg);
+    const name = msg.content.replace(regex.header, '').replace(regex.cmd.feeds, '').trim();
+    const worker = Worker(name);
     worker.getFeed((err, res) => {
       if (err) console.log(err);
       const message = `Yep! He does! Over the last 10 games, he's fed in the last ${res.numGames}. `
@@ -31,6 +39,7 @@ client.on('message', (msg) => {
       console.log(message);
     });
   }
+
 
   // Fun thing for my friends -- can discard
   if (msg.author.username === 'Robbie' || msg.author.username === 'Sajirodman11') {

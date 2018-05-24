@@ -32,8 +32,9 @@ const worker = (msg) => {
     @private
   */
   const _getAccId = (callback) => {
-    const summonerUrl = _build_api_url('summoner/v3/summoners/by-name/',
-          msg.content.replace('!', '').split(' ')[0], null);
+    // const summonerUrl = _build_api_url('summoner/v3/summoners/by-name/',
+    //       msg.content.replace('!', '').split(' ')[0], null);
+    const summonerUrl = _build_api_url('summoner/v3/summoners/by-name/', encodeURI(msg));
     // const summonerUrl = _build_api_url('summoner/v3/summoners/by-name/', msg.replace('!', '').split(' ')[0], null);
     request({ url: summonerUrl, json: true }, (err, res, body) => {
         if (err) { return callback(err, { statusCode: res.statusCode }); }
@@ -87,6 +88,9 @@ const worker = (msg) => {
         let participantID;
         body.participantIdentities.forEach((p) => {
           if (p.player.summonerName.toLowerCase() === name) participantID = p.participantId; });
+
+        // body.participantIdentities.forEach( (p) => { console.log(p.player.summonerName + " == " + (p.player.summonerName === name));});
+
         const players = body.participants.filter(x => x.participantId === participantID);
         const stats = players[0].stats;
         const kda = (stats.kills + stats.assists) / stats.deaths;
@@ -106,7 +110,8 @@ const worker = (msg) => {
     @public
   */
   const getFeed = (callback) => {
-    const summoner = msg.content.toLowerCase().replace('!', '').split(' ')[0];
+    // const summoner = msg.content.toLowerCase().replace('!', '').split(' ')[0];
+    const summoner = msg.toLowerCase();
     // const summoner = msg.toLowerCase().replace('!', '').split(' ')[0];
     _getAccId((acc_err, acc_res) => {
       if (acc_err) { return callback(acc_err, null); }
