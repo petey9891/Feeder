@@ -34,13 +34,14 @@ client.on('message', (msg) => {
       if (err) {
         console.error(err.error); msg.channel.send(err.message);
       } else {
-        const message = (res.poppedOff) ? `Oh shit, ${name} has popped off in their last 10 games`
-                        + ' and hasn\'t fed at all.'
-                  : `Yep! He does! Over the last 10 games, he's fed in the last ${res.numGames}.`
-                        + ' In one of those games, he went:'
-                        + ` ${res.worstGame.kills}/${res.worstGame.deaths}/${res.worstGame.assists}`
-                        + ` with a ${Math.round(res.worstGame.kda * 100) / 100} kda and`
-                        + ` ${res.worstGame.totalDamage} total damage. Yikes! no flame`;
+        const message = (res.poppedOff)
+              ? `Oh shit, ${name} has popped off in their last 10 games`
+                    + ' and hasn\'t fed at all.'
+              : `Yep! He does! Over the last 10 games, he's fed in the last ${res.numGames}.`
+                    + ' In one of those games, he went:'
+                    + ` ${res.worstGame.kills}/${res.worstGame.deaths}/${res.worstGame.assists}`
+                    + ` with a ${Math.round(res.worstGame.kda * 100) / 100} kda and`
+                    + ` ${res.worstGame.totalDamage} total damage. Yikes! no flame`;
         msg.channel.send(message);
         console.log(message);
       }
