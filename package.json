@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ./src/feeder.js"
+    "lint": "eslint app.js"
   },
   "author": "petey9891",
   "license": "ISC",

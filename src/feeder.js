@@ -32,6 +32,13 @@ const feeder = (msg) => {
     const summonerUrl = _build_api_url('summoner/v3/summoners/by-name/', encodeURI(msg));
     request({ url: summonerUrl, json: true }, (err, res, body) => {
       if (err) return reject(err);
+      if (body.status) {
+        if (body.status.status_code === 403) {
+          reject({ error: body, message: 'Invalid API key' });
+        } else if (body.status.status_code === 404) {
+          reject({ error: body, message: 'That summoner name does not exist' });
+        }
+      }
       resolve(body.accountId);
     });
   });
@@ -90,11 +97,7 @@ const feeder = (msg) => {
   */
   const _getMatches = (matchList, name) => new Promise((resolve, reject) => {
     const games = [];
-    try {
-      matchList.forEach(x => games.push(x.gameId));
-    } catch (err) {
-      reject({ message: 'Most likely just a wrong summoner name', error: err });
-    }
+    matchList.forEach(x => games.push(x.gameId));
     const promises = [];
     games.forEach(x => promises.push(_getMatch(_build_api_url('match/v3/matches/', x, null), name)));
     Promise.all(promises).then(val => resolve(val)).catch(err => reject(err));
@@ -108,6 +111,7 @@ const feeder = (msg) => {
   */
   const _feeds = (games) => {
     const feeds = games.filter(x => (x !== -1));
+    if (feeds.length === 0) return { poppedOff: true };
     let worstGame;
     feeds.forEach((x) => {
       if (worstGame === undefined || x.kda < worstGame.kda) { worstGame = x; }

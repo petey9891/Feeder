@@ -17,24 +17,23 @@ const regex = {
   cmd: {
     feeds: /([FEDSfeds])\w+$/gm
   }
-}
+};
 
 // After a message, runs the following scripts
 client.on('message', (msg) => {
-
   /**
     Generates statistics for worst league game within last 10 games
     @example !<name> feeds
   */
-
   if (regex.header.test(msg.content) && regex.cmd.feeds.test(msg.content)) {
     console.log(`Query -- ${msg.content}`);
 
     const name = msg.content.replace(regex.header, '').replace(regex.cmd.feeds, '').trim();
     const feeder = Feeder(name);
     feeder.getFeed((err, res) => {
-      if (err) { console.error(err.error); msg.channel.send(err.message)}
-      else {
+      if (err) {
+        console.error(err.error); msg.channel.send(err.message);
+      } else {
         const message = `Yep! He does! Over the last 10 games, he's fed in the last ${res.numGames}.`
             + ' In one of those games, he went:'
             + ` ${res.worstGame.kills}/${res.worstGame.deaths}/${res.worstGame.assists}`
