@@ -8,23 +8,6 @@ const client = new Discord.Client();
 // Bot initialized
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
-
-  const name = 'rodman53211';
-  const feeder = Feeder(name);
-  feeder.getFeed((err, res) => {
-    if (err) {
-      console.error(err.error);
-    } else {
-      const message = (res.poppedOff) ? `Oh shit, ${name} has popped off in their last 10 games`
-                      + ' and hasn\'t fed at all.'
-                : `Yep! He does! Over the last 10 games, he's fed in the last ${res.numGames}.`
-                      + ' In one of those games, he went:'
-                      + ` ${res.worstGame.kills}/${res.worstGame.deaths}/${res.worstGame.assists}`
-                      + ` with a ${Math.round(res.worstGame.kda * 100) / 100} kda and`
-                      + ` ${res.worstGame.totalDamage} total damage. Yikes! no flame`;
-      console.log(message);
-    }
-  });
 });
 
 // Regex for seeing if message is a command.
