@@ -50,7 +50,7 @@ client.on('message', (msg) => {
   // Fun thing for my friends -- can discard
   if (msg.author.username === 'Robbie' || msg.author.username === 'Sajirodman11') {
     const ranNum = Math.floor(Math.random() * (50 - 1)) + 1;
-    console.log(`Random guess -- ${ranNum}`);
+    // console.log(`Random guess -- ${ranNum}`);
     if (ranNum === 5) {
       msg.channel.send('bice nind');
     }
