@@ -34,9 +34,9 @@ const feeder = (msg) => {
       if (err) return reject(err);
       if (body.status) {
         if (body.status.status_code === 403) {
-          reject({ error: body, message: 'Invalid API key' });
+          reject({ error: body, message: 'Invalid API key' }); // eslint-disable-line prefer-promise-reject-errors
         } else if (body.status.status_code === 404) {
-          reject({ error: body, message: 'That summoner name does not exist' });
+          reject({ error: body, message: 'That summoner name does not exist' }); // eslint-disable-line prefer-promise-reject-errors
         }
       }
       resolve(body.accountId);
@@ -72,7 +72,8 @@ const feeder = (msg) => {
         if (p.player.summonerName.toLowerCase() === name) participantID = p.participantId;
       });
       const players = body.participants.filter(x => x.participantId === participantID);
-      const stats = players[0].stats;
+      const [stats] = players;
+      // const stats = players[0].stats;
       const kda = (stats.kills + stats.assists) / stats.deaths;
       if (kda < 1) {
         resolve({
